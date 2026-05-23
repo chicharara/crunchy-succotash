@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>raraczu</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *{ margin:0; padding:0; box-sizing:border-box; }
+
+    html, body{
+      height:100%;
+      overflow:hidden;
+      font-family:'Inter',sans-serif;
+      color:white;
+    }
+
+    /* BACKGROUND */
+    body{
+      background:
+      linear-gradient(
+      rgba(45, 65, 110, .28),
+      rgba(45, 65, 110, .28)
+      ),
+      url("bg.png");
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      background-attachment:fixed;
+      position:relative;
+    }
+
+    /* GLASS OVERLAY */
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background:rgba(70, 95, 150, .10);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      z-index:-1;
+    }
+
+    /* BLOBS */
+    .blob{
+      position:fixed;
+      width:480px;
+      height:480px;
+      border-radius:50%;
+      filter:blur(120px);
+      opacity:.22;
+      z-index:-2;
+      animation:blobFloat 14s ease-in-out infinite;
+    }
+
+    .blob1{
+      background:#4A6A9F;
+      top:-160px;
+      left:-140px;
+    }
+
+    .blob2{
+      background:#6B8AC9;
+      bottom:-160px;
+      right:-140px;
+      animation-delay:3.5s;
+    }
+
+    @keyframes blobFloat{
+      0%,100%{ transform:translateY(0px); }
+      50%{ transform:translateY(-30px); }
+    }
+
+    /* LOADING */
+    .loading-screen{
+      position:fixed;
+      inset:0;
+      background:rgba(30,45,85,.7);
+      backdrop-filter:blur(30px);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:999999;
+      transition:1s ease;
+    }
+
+    .loading-gif{
+      width:150px;
+      max-width:45vw;
+      object-fit:contain;
+      animation:loadingFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes loadingFloat{
+      0%,100%{ transform:translateY(0px); }
+      50%{ transform:translateY(-12px); }
+    }
+
+    /* MAIN */
+    .main{
+      height:100vh;
+      overflow-y:auto;
+      padding:60px 24px 160px;
+      max-width:820px;
+      margin:auto;
+      opacity:0;
+      transform:translateY(30px);
+      transition:1.5s ease;
+    }
+
+    .main.show{
+      opacity:1;
+      transform:translateY(0px);
+    }
+
+    .main::-webkit-scrollbar{ width:6px; }
+    .main::-webkit-scrollbar-thumb{
+      background:rgba(255,255,255,.2);
+      border-radius:10px;
+    }
+
+    /* TITLE */
+    .title{
+      text-align:center;
+      margin-top:20px;
+      margin-bottom:40px;
+      font-size:15px;
+      letter-spacing:7px;
+      text-transform:uppercase;
+      opacity:.88;
+    }
+
+    /* GLASS */
+    .glass{
+      background:rgba(255,255,255,.095);
+      border:1px solid rgba(255,255,255,.14);
+      backdrop-filter:blur(28px);
+      box-shadow:0 14px 50px rgba(60, 90, 160, .22),
+                 inset 0 2px 3px rgba(255,255,255,.18);
+      border-radius:34px;
+      transition: all .7s cubic-bezier(.22,1,.36,1);
+    }
+
+    /* FLOATING */
+    .floating{
+      transform:translateY(-14px) scale(1.03);
+      box-shadow:0 28px 60px rgba(60, 90, 160, .35),
+                 inset 0 2px 3px rgba(255,255,255,.25);
+    }
+
+    /* INPUT BOX */
+    .nickname-box{
+      padding:22px 28px;
+      margin-bottom:22px;
+    }
+
+    /* SUGGESTION BOX */
+    .suggestion-box{
+      min-height:210px;
+      padding:40px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      cursor:text;
+    }
+
+    /* INPUTS */
+    input, textarea{
+      width:100%;
+      background:none;
+      border:none;
+      outline:none;
+      color:white;
+      font-size:16.5px;
+      font-family:'Inter',sans-serif;
+    }
+
+    textarea{ resize:none; height:145px; }
+
+    input::placeholder, textarea::placeholder{
+      color:rgba(255,255,255,.78);
+    }
+
+    /* CHANGING TEXT */
+    .changing-text{
+      font-size:22px;
+      line-height:1.65;
+      opacity:.94;
+      transition:.5s ease;
+    }
+
+    /* BUTTON */
+    .btn-row{
+      display:flex;
+      justify-content:flex-end;
+      margin-top:22px;
+    }
+
+    .post-btn{
+      padding:15px 36px;
+      border-radius:24px;
+      background:rgba(255,255,255,.115);
+      color:white;
+      font-weight:600;
+      cursor:pointer;
+      border:none;
+      box-shadow:0 14px 40px rgba(60, 90, 160, .20);
+      transition: all .7s cubic-bezier(.22,1,.36,1);
+    }
+
+    .post-btn:hover{
+      background:rgba(255,255,255,.20);
+      transform:scale(1.06);
+    }
+
+    /* POSTS */
+    .posts{
+      margin-top:50px;
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+    }
+
+    .post-card{
+      padding:26px;
+      animation:appear .9s ease, smoothFloat 9s ease-in-out infinite;
+    }
+
+    @keyframes appear{
+      from{ opacity:0; transform:translateY(30px); }
+      to{ opacity:1; transform:translateY(0px); }
+    }
+
+    @keyframes smoothFloat{
+      0%,100%{ transform:translateY(0px); }
+      25%{ transform:translateY(-5px); }
+      50%{ transform:translateY(4px); }
+      75%{ transform:translateY(-4px); }
+    }
+
+    .post-meta{
+      font-style:italic;
+      font-size:13.5px;
+      opacity:.75;
+      margin-bottom:16px;
+    }
+
+    .post-content{
+      line-height:1.8;
+      word-wrap:break-word;
+      opacity:.96;
+      font-size:15.5px;
+    }
+
+    /* POPUP */
+    .popup{
+      position:fixed;
+      top:35px;
+      left:50%;
+      transform:translateX(-50%) translateY(-30px);
+      padding:18px 28px;
+      border-radius:26px;
+      background:rgba(255,255,255,.13);
+      border:1px solid rgba(255,255,255,.17);
+      backdrop-filter:blur(26px);
+      opacity:0;
+      pointer-events:none;
+      transition:.7s cubic-bezier(.22,1,.36,1);
+      z-index:999999;
+    }
+
+    .popup.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(0px);
+    }
+
+    /* FOOTER */
+    .footer{
+      position:fixed;
+      bottom:24px;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:12.5px;
+      letter-spacing:5px;
+      opacity:.62;
+      z-index:999;
+    }
+
+    .hidden{ display:none; }
+
+    /* RESPONSIVE - Better Laptop/Desktop */
+    @media(min-width:769px){
+      .main{
+        padding:70px 40px 160px;
+        max-width:860px;
+      }
+      .suggestion-box{ min-height:230px; padding:45px; }
+      .post-card{ padding:30px; }
+    }
+
+    @media(max-width:768px){
+      .main{ padding:50px 20px 150px; }
+    }
+
+    @media(max-width:480px){
+      .title{ font-size:13px; letter-spacing:5px; }
+      .changing-text{ font-size:19px; }
+      .post-content{ font-size:15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+
+  <div class="loading-screen" id="loading">
+    <img src="loading.gif" class="loading-gif">
+  </div>
+
+  <div class="main" id="main">
+    <div class="title">for suggestion</div>
+
+    <div class="glass nickname-box" id="nicknameBox">
+      <input type="text" id="nickname" placeholder="nickname">
+    </div>
+
+    <div class="glass suggestion-box" id="suggestionBox">
+      <div class="changing-text" id="changingText">any ideas?</div>
+      <textarea id="suggestionInput" class="hidden" placeholder="share it here..."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="post-btn" id="postBtn">post</button>
+    </div>
+
+    <div class="posts" id="posts"></div>
+  </div>
+
+  <div class="footer">by raraczu</div>
+
+  <div class="popup" id="popup">plss fill all the blanks first</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCI7gHJjT6AdES_H04jxk5U4McGnHyDH-k",
+      authDomain: "my-baby-b65ef.firebaseapp.com",
+      projectId: "my-baby-b65ef",
+      storageBucket: "my-baby-b65ef.firebasestorage.app",
+      messagingSenderId: "402919711371",
+      appId: "1:402919711371:web:8918d35b137ceb1ccdea8e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const loading = document.getElementById("loading");
+    const main = document.getElementById("main");
+
+    setTimeout(() => {
+      loading.style.opacity = "0";
+      setTimeout(() => {
+        loading.style.display = "none";
+        main.classList.add("show");
+      }, 1000);
+    }, 2500);
+
+    const texts = ["add suggestions", "any ideas?", "what's in your mind?", "share it.", "drop your thoughts here"];
+    let current = 0;
+    const changingText = document.getElementById("changingText");
+    const suggestionInput = document.getElementById("suggestionInput");
+
+    setInterval(() => {
+      if (!suggestionInput.classList.contains("hidden")) return;
+      current = (current + 1) % texts.length;
+      changingText.style.opacity = "0";
+      setTimeout(() => {
+        changingText.innerText = texts[current];
+        changingText.style.opacity = "1";
+      }, 300);
+    }, 10000);
+
+    const nicknameBox = document.getElementById("nicknameBox");
+    const suggestionBox = document.getElementById("suggestionBox");
+    const postBtn = document.getElementById("postBtn");
+    const popup = document.getElementById("popup");
+    const posts = document.getElementById("posts");
+
+    function removeFloating() {
+      nicknameBox.classList.remove("floating");
+      suggestionBox.classList.remove("floating");
+      postBtn.classList.remove("floating");
+    }
+
+    nicknameBox.addEventListener("click", (e) => { e.stopPropagation(); removeFloating(); nicknameBox.classList.add("floating"); });
+    suggestionBox.addEventListener("click", (e) => { 
+      e.stopPropagation(); 
+      removeFloating(); 
+      suggestionBox.classList.add("floating");
+      changingText.classList.add("hidden");
+      suggestionInput.classList.remove("hidden");
+      suggestionInput.focus();
+    });
+    postBtn.addEventListener("click", (e) => { e.stopPropagation(); removeFloating(); postBtn.classList.add("floating"); });
+
+    document.addEventListener("click", (e) => {
+      if (!nicknameBox.contains(e.target) && !suggestionBox.contains(e.target) && !postBtn.contains(e.target)) {
+        removeFloating();
+      }
+    });
+
+    postBtn.addEventListener("click", async () => {
+      const nickname = document.getElementById("nickname").value.trim();
+      const suggestion = suggestionInput.value.trim();
+
+      if (!nickname || !suggestion) {
+        popup.classList.add("show");
+        setTimeout(() => popup.classList.remove("show"), 2500);
+        return;
+      }
+
+      const now = new Date();
+      const date = now.toLocaleDateString();
+      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      await addDoc(collection(db, "suggestions"), {
+        nickname, suggestion, date, time, createdAt: Date.now()
+      });
+
+      suggestionInput.value = "";
+    });
+
+    const q = query(collection(db, "suggestions"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snapshot) => {
+      posts.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        posts.innerHTML += `
+          <div class="glass post-card">
+            <div class="post-meta">${data.nickname}, ${data.date}, ${data.time}</div>
+            <div class="post-content">${data.suggestion}</div>
+          </div>`;
+      });
+    });
+  </script>
+</body>
+</html>
